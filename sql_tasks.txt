@@ -1,0 +1,196 @@
+9 +
+Select distinct product.maker from pc join product on pc.model = product.model
+where pc.speed >= 450
+10 +
+Select model, price from Printer where price = (select max (price) from printer)
+11 +
+Select avg (speed) as Avg_speed from pc
+12 +
+Select avg (speed) as Avg_speed from laptop where price > 1000
+13 +
+Select avg (speed) as Avg_speed from pc join product on pc.model = product.model where maker = 'A'
+15 +
+Select hd from pc
+GROUP BY hd
+HAVING count(hd) > 1
+19 +
+SELECT maker, AVG(screen) AS Avg_screen
+FROM laptop join product on laptop.model = product.model
+GROUP BY maker
+21 +
+SELECT maker, MAX(price) AS Max_price
+FROM pc join product on pc.model = product.model
+GROUP BY maker
+22 +
+Select speed, AVG(price) AS Avg_price from pc
+where pc.speed > 600
+GROUP BY  speed
+28+
+Select COUNT(maker) AS qty from product
+where maker in (select maker from product GROUP BY maker
+Having COUNT(*) = 1)
+144
+
+8 +
+SELECT maker FROM Product WHERE type = 'PC'
+except
+SELECT maker FROM Product WHERE type = 'laptop'
+---
+SELECT distinct maker FROM Product WHERE type = 'PC' AND maker not in (Select maker from product where type = 'laptop')
+16 +
+Select pc1.model, pc2.model, pc1.speed, pc1.ram from pc as pc1, pc as pc2
+where pc1.speed = pc2.speed
+and
+pc1.ram = pc2.ram
+and not
+pc1.model = pc2.model
+and
+pc1.model > pc2.model
+Group by pc1.model, pc2.model, pc1.speed, pc1.ram
+17 +
+Select distinct product.type, laptop.model, laptop.speed from product join laptop on laptop.model = product.model
+WHERE speed < ALL (SELECT speed FROM PC)
+--
+WHERE laptop.speed < (select min (speed) from pc)
+18 +
+Select distinct maker, price from product join printer on product.model = printer.model
+WHERE price = (SELECT MIN(price) FROM printer where color = 'y') and color = 'y'
+20 +
+Select maker, COUNT(model) AS Count_Model from product 
+WHERE type = 'PC'
+Group by maker
+HAVING count(model) >= 3
+23 +
+Select distinct maker from product join pc on product.model = pc.model
+WHERE speed >= 750
+INTERSECT 
+Select distinct maker from product join laptop on product.model = laptop.model
+WHERE speed >= 750
+24+
+With Max_price AS (
+Select price, model from pc
+UNION
+Select price, model from laptop
+UNION
+Select price, model from printer)
+Select distinct model from Max_price
+Where price = (Select max(price) from Max_price)
+26+
+With Max_price AS (
+Select price from pc join product on pc.model = product.model
+Where product.maker = 'A'
+UNION ALL
+Select price from laptop join product on laptop.model = product.model
+Where product.maker = 'A')
+Select avg(price) from Max_price
+27 +
+Select distinct product.maker, avg(pc.hd) as Avg_hd from pc join product on pc.model = product.model
+WHERE product.maker in ( Select distinct maker from product where type = 'printer')
+Group by maker
+35 +
+Select distinct model, type from product
+where model not like '%[^a-z]%'
+OR 
+model not like '%[^0-9]%'
+
+25
+40
+58
+65
+------
+14+
+Select ships.class, name, country from ships join classes on ships.class = classes.class
+where numGuns >= 10
+31+
+Select distinct class, country from classes 
+Where bore >= 16
+33+
+Select ship from Outcomes
+Where battle = 'North Atlantic'
+AND
+result = 'sunk'
+38+
+Select distinct country from classes
+where type = 'bb'
+INTERSECT
+Select distinct country from classes
+where type = 'bc'
+42+
+Select ship, battle from outcomes 
+where result = 'sunk'
+44+
+Select name from ships
+where name like 'R%'
+UNION
+Select ship from outcomes
+where ship like 'R%'
+45+
+Select name from ships
+Where name like '% % %'
+UNION
+Select ship from outcomes
+Where ship like '% % %'
+49+
+Select name from ships join classes on ships.class = classes.class
+Where bore = 16
+UNION
+Select ship from outcomes join classes on outcomes.ship = classes.class
+Where bore = 16
+50+
+Select distinct outcomes.battle from outcomes join ships on ships.name = outcomes.ship
+Where ships.class = 'Kongo'
+34+
+Select distinct ships.name from ships join classes on ships.class = classes.class
+Where displacement > 35000
+AND
+launched >= 1922
+AND
+classes.type = 'bb'
+36+
+Select name from ships join classes on classes.class = ships.name
+UNION
+Select ship from outcomes join classes on classes.class = outcomes.ship
+37+
+Select class from 
+(
+Select class, name from ships
+union
+Select ship, ship from outcomes join classes on classes.class = outcomes.ship
+) xship
+Group by class
+Having count (name) = 1
+39+
+Select distinct ship from outcomes o1 join battles b1 on b1.name = o1.battle
+where result = 'damaged'
+and
+exists
+(
+select ship from outcomes o2 join battles b2 on b2.name = o2.battle
+where b2.date > b1.date and o1.ship = o2.ship
+)
+43+
+Select name from battles
+Where year(date) not in
+(
+Select distinct launched from ships
+Where launched is not null
+)
+-----
+63+
+Select name from passenger join pass_in_trip on passenger.id_Psg = pass_in_trip.id_Psg
+Group by name, passenger.id_Psg
+Having count (place) > count (distinct place)
+?77
+Select distinct COUNT(town_from) as Qty, [date] from
+(
+Select distinct [date], max(town_from) as town_from from pass_in_trip join trip on trip.trip_no = pass_in_trip.trip_no
+Where town_from = 'Rostov'
+Group by [date], town_from
+) xt
+Group by [date]
+?87
+Select name, COUNT(town_to) AS Qty from passenger join pass_in_trip on passenger.id_psg = pass_in_trip.id_psg
+Join trip on trip.trip_no = pass_in_trip.trip_no
+Where town_to = 'Moscow'
+GROUP BY name
+Having count (town_to) > 1
